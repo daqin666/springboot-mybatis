@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.example.mapper.CarMapper">
+    <!--
+            1、专门定义一个结果映射，在这个结果映射当中指定数据库表的字段名和Java类的属性名的对应关系
+            2、type属性：用来指定POJO类的类名
+            3、id属性：指定resultMap的唯一标识，这个id将来要在select标签中使用
+        -->
+    <resultMap id="carResultMap" type="Car">
+        <!--如果数据库表中有主键，一般都是有主键，要不然不符合数据库设计第一范式-->
+        <!--如果有主键，建议这里配置一个id标签，这样的配置可以让MyBatis提高效率-->
+        <id property="id" column="id" />
+        <!--
+            property后面填写的是POJO类的属性名
+            column后面填写数据库表的字段名
+        -->
+        <result property="carNum" column="car_num" />
+        <result property="guidePrice" column="guide_price" />
+        <result property="produceTime" column="produce_time" />
+        <result property="carType" column="car_type" />
+    </resultMap>
+
+    <!--select标签中的resultMap属性用来指定使用哪个结果映射，resultMap后面的值是resultMap的id-->
+    <select id="selectAllByResultMap" resultMap="carResultMap">
+        select
+            id,
+            car_num,
+            brand,
+            guide_price,
+            produce_time,
+            car_type
+        from
+            t_car
+    </select>
+
+    <!--======================================================================-->
+
+    <select id="getAll" resultType="Car">
+        select * from t_car
+    </select>
+
+    <!--
+    	#{}对应的是pojo层实体类的属性名"abcDe"对应的"getAbcDe"的"abcDe"(驼峰命名规范)
+    	想简单点，对应属性名就行，复杂可能会乱ovo
+    -->
+    <insert id="insert">
+        insert into t_car(id,car_num,brand,guide_price,produce_time,car_type)
+        values(null,#{carNum},#{brand},#{guidePrice},#{produceTime},#{carType})
+    </insert>
+
+    <!--如果占位符只有一个，其实可以随便写里面的内容但不能不写，但最好见名知意，这次只是测试-->
+    <delete id="delete">
+        delete from t_car where id = #{dasdad}
+    </delete>
+
+    <update id="update">
+        update t_car set
+                         car_num=#{carNum},
+                         brand=#{brand},
+                         guide_price=#{guidePrice},
+                         produce_time=#{produceTime},
+                         car_type=#{carType}
+        where id=#{id}
+    </update>
+
+    <!--
+        select * from t_car where id=#{id}
+        select * from t_car where id=#{0}
+        #{0}代表接收的是dao层中的第一个参数
+    -->
+    <select id="getById" resultType="Car">
+        select * from t_car where id=#{0}
+    </select>
+
+
+    <!--======================================================================-->
+    <!--
+        这里是不能使用#{} 否则会以字符串形式放在Sql语句当中 只能使用${}
+        #{}是防止Sql注入风险的 是以值的方式放到Sql语句当中
+        如果需要的Sql语句的关键字(固定值)放到Sql语句当中只能使用${}
+    -->
+    <select id="selectAllByAscOrDesc" resultType="Car">
+        select
+            id,
+            car_num carNum,
+            brand,
+            guide_price guidePrice,
+            produce_time produceTime,
+            car_type carType
+        from
+            t_car
+        order by
+            produce_time ${ascOrDesc}
+    </select>
+    <select id="selectByCarType" resultType="Car">
+        select
+            id,
+            car_num carNum,
+            brand,
+            guide_price guidePrice,
+            produce_time produceTime,
+            car_type carType
+        from
+            t_car
+        where
+            car_type=#{carType}
+    </select>
+
+    <!--delete from t_car where id in (?,?)-->
+    <delete id="deleteBatch">
+        delete from t_car
+        where id in (${ids})
+    </delete>
+
+    <select id="selectByBrandLike" resultType="Car">
+        select
+        id,
+        car_num carNum,
+        brand,
+        guide_price guidePrice,
+        produce_time produceTime,
+        car_type carType
+        from
+        t_car
+        where
+        <!--brand like '%${brand}%'-->
+        <!--brand like concat('%',#{brand},'%')-->
+        brand like "%"#{brand}"%"
+    </select>
+
+    <!--======================================================================-->
+
+    <!--
+        useGeneratedKeys="true" 使用自动生成的主键值
+        KeyProperty="id" 指定主键值赋值给对象的哪个属性，这个就表示将主键值赋值给Car对象的id属性
+     -->
+    <insert id="insertUseGeneratedKey" useGeneratedKeys="true" keyProperty="id">
+        insert into t_car
+        values(null,#(carNum),#(brand),#(guidePrice),#(procedureTime),#(carType))
+    </insert>
+
+    <!--======================================================================-->
+
+    <insert id="insertStudentByMap" parameterType="map">
+        insert into
+            t_student
+        values
+            (null,#{姓名},#{年龄},#{身高},#{生日},#{性别})
+    </insert>
+
+    <!--======================================================================-->
+
+    <select id="selectByIdRetMap" resultType="map">
+        select
+            id,
+            car_num carNum,
+            brand,
+            guide_price guidePrice,
+            produce_time produceTime,
+            car_type carType
+        from
+            t_car
+        where
+            id = #{id}
+    </select>
+
+    <!--======================================================================-->
+
+    <!--注意：这个resultType是map不是list-->
+    <select id="selectAllRetListMap" resultType="map">
+        select
+            id,
+            car_num carNum,
+            brand,
+            guide_price guidePrice,
+            produce_time produceTime,
+            car_type carType
+        from
+            t_car
+    </select>
+
+    <!--======================================================================-->
+
+    <select id="selectAllRetMap" resultType="map">
+        select
+            id,
+            car_num carNum,
+            brand,
+            guide_price guidePrice,
+            produce_time produceTime,
+            car_type carType
+        from
+            t_car
+    </select>
+
+    <!--======================================================================-->
+
+    <!--
+            1、if标签中的test属性是必须的
+            2、if标签中test属性的值是false或者是true
+            3、如果为true，则if标签中的sql语句就会拼接。反之就不会拼接
+            4、test属性中可以使用的是：
+                当使用了@Param注解，那么test中要出现的是@Param注解指定的参数名。
+                当没有使用@Param注解，那么test中要出现的是：param1 param2 param3 ...
+                当使用了POJO，那么test中出现的是POJO类的属性名
+            5、在MyBatis的动态SQL中，不能使用&&，使用的是and
+            6、标签内与#{}内写的都是POJO属性名，其余是SQL的字段名
+            7、注意：这里我在yml文件配置了MyBatis的自动驼峰命名规范，所以不用使用as重新命名
+            8、这个1 = 1是防止后面出现空传值导致SQL语句出现错误
+        -->
+    <select id="selectByMultiCondition" resultMap="carResultMap">
+        select
+            id,car_num,brand,guide_price,produce_time,car_type
+        from
+            t_car
+        where
+            1 = 1
+        <if test="brand != null and brand != ''">
+            and brand like "%"#{brand}"%"
+        </if>
+        <if test="guidePrice != null and guidePrice != ''">
+            and guide_price >= #{guidePrice}
+        </if>
+        <if test="carType != null and carType != ''">
+            and car_type like "%"#{carType}"%"
+        </if>
+    </select>
+
+    <!--======================================================================-->
+
+    <!--
+        所有条件都有空时，where标签保证不会生成where子句。
+        自动去除某些条件前面多余的and或or
+        where标签是专门负责where子句动态生成的
+        这里将1 = 1去掉了并且第一个if标签语句还有"and"关键字 但丝毫不影响SQL查询语句
+        但要注意：不能在语句后面加"and"比如：and brand like "%"#{brand}"%" and
+    -->
+    <select id="selectByMultiConditionWithWhere" resultType="Car">
+        select
+            id,car_num,brand,guide_price,produce_time,car_type
+        from
+            t_car
+        <where>
+            <if test="brand != null and brand != ''">
+                and brand like "%"#{brand}"%"
+            </if>
+            <if test="guidePrice != null and guidePrice != ''">
+                and guide_price >= #{guidePrice}
+            </if>
+            <if test="carType != null and carType != ''">
+                and car_type like "%"#{carType}"%"
+            </if>
+        </where>
+    </select>
+
+    <!--======================================================================-->
+
+    <!--
+        prefix：加前缀
+        suffix：加后缀
+        prefixOverrides：删除前缀
+        suffixOverrides：删除后缀
+        以下表示在trim标签所有内容的前面添加where，后缀的and或者or去掉
+    -->
+    <select id="selectByMultiConditionWithTrim" resultType="Car">
+        select
+            id,car_num,brand,guide_price,produce_time,car_type
+        from
+            t_car
+        <trim prefix="where" suffixOverrides="and|or">
+            <if test="brand != null and brand != ''">
+                brand like "%"#{brand}"%" and
+            </if>
+            <if test="guidePrice != null and guidePrice != ''">
+                guide_price >= #{guidePrice} and
+            </if>
+            <if test="carType != null and carType != ''">
+                car_type like "%"#{carType}"%"
+            </if>
+        </trim>
+    </select>
+
+    <!--======================================================================-->
+
+    <!--主要使用在update语句当中，用于生成set关键字，同时去掉最后多余的","-->
+    <update id="updateBySet">
+        update
+            t_car
+        <set>
+            <if test="carNum != null and carNum != ''">car_num = #{carNum},</if>
+            <if test="brand != null and brand != ''">brand = #{brand},</if>
+            <if test="guidePrice != null and guidePrice != ''">guide_price = #{guidePrice},</if>
+            <if test="produceTime != null and produceTime != ''">produce_time = #{produceTime},</if>
+            <if test="carType != null and carType != ''">car_type = #{carType}</if>
+        </set>
+        where
+        id = #{id}
+    </update>
+
+    <!--======================================================================-->
+
+    <!--    等同于code中的if-else
+            if(){
+
+            }else if(){
+
+            }else if(){
+
+            }else{
+
+            }
+    -->
+    <select id="selectByChoose" resultType="Car">
+        select
+            id,car_num,brand,guide_price,produce_time,car_type
+        from
+            t_car
+        <where>
+            <choose>
+                <when test="brand != null and brand != ''">
+                    brand like "%"#{brand}"%"
+                </when>
+                <when test="guidePrice != null and guidePrice != ''">
+                    guide_price >= #{guidePrice}
+                </when>
+                <otherwise>
+                    car_type like "%"#{carType}"%"
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+    <!--======================================================================-->
+
+    <!--
+        foreach标签的属性：
+            collection：指定数组或者集合
+            item：代表数组或集合中的元素
+            separator：循环之间的分隔符
+            open：在标签先添加的符号
+            close：在标签后添加的符号
+    -->
+    <update id="deleteByIds">
+        delete from
+            t_car
+        where
+            id in
+        <foreach collection="ids" item="aaa" separator="," open="(" close=")">
+            #{aaa}
+        </foreach>
+    </update>
+
+    <insert id="insertBatch">
+        insert into
+            t_car
+        values
+        <foreach collection="cars" item="car" separator=",">
+            (null,#{car.carNum},#{car.brand},#{car.guidePrice},#{car.produceTime},#{car.carType})
+        </foreach>
+    </insert>
+
+    <!--======================================================================-->
+
+    <!--声明一个SQL片段-->
+    <sql id="carColumnNameSql">
+        id,
+        car_num,
+        brand,
+        guide_price,
+        produce_time,
+        car_type
+    </sql>
+    <!--将声明的SQL片段包含进来-->
+    <select id="selectAll" resultType="Car">
+        select
+            <include refid="carColumnNameSql" />
+        from
+            t_car
+    </select>
+
+    <!--======================================================================-->
+
+    <sql id="selectAllColumn">
+        id,car_num,brand,guide_price,produce_time,car_type
+    </sql>
+    <select id="selectByPage" resultMap="carResultMap">
+        select
+            <include refid="selectAllColumn" />
+        from
+            t_car
+            limit
+            #{startIndex},#{pageSize}
+    </select>
+
+    <!--======================================================================-->
+
+</mapper>

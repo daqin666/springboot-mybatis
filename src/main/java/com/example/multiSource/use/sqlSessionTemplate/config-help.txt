@@ -1,0 +1,6 @@
+注意：两个config类中的@MapperScan(basePackages = "com.xxx.fw.dao.impl", sqlSessionFactoryRef = "sqlserverSessionFactory")，
+特别重要，千万别配置错误，尤其是basePackages的值，因为这里是双数据源，所以需要一个映射实现类来获取具体某个数据源的sqlsessionTemplate类；
+
+如：MysqlMapper接口对应MysqlMapperImpl实现类；
+一般我们用mybatis直接用接口包路径就行，但在这里，为了选择数据源，多加了一个实现类，且必须在basePackages中配置实现类
+（不能配置接口类的包路径），否则，只有一个数据源（主数据源）

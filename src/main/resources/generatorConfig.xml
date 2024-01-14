@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+    <context id="DB2Tables" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+        <commentGenerator>
+            <!-- 是否去除自动生成的注释 -->
+            <property name="suppressAllComments" value="true"/>
+            <!-- 生成注释是否带时间戳-->
+            <property name="suppressDate" value="true"/>
+            <!-- 生成的Java文件的编码格式 -->
+            <property name="javaFileEncoding" value="utf-8"/>
+            <!-- 数据库注释支持 -->
+            <property name="addRemarkComments" value="true"/>
+            <!-- 时间格式设置 -->
+            <property name="dateFormat" value="yyyy-MM-dd HH:mm:ss"/>
+            <!-- 格式化java代码-->
+            <property name="javaFormatter" value="org.mybatis.generator.api.dom.DefaultJavaFormatter"/>
+            <!-- 格式化XML代码-->
+            <property name="xmlFormatter" value="org.mybatis.generator.api.dom.DefaultXmlFormatter"/>
+        </commentGenerator>
+
+        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/mybatis-demo"
+                        userId="root"
+                        password="root">
+        </jdbcConnection>
+
+        <!-- 生成模型的包名和位置 -->
+        <javaModelGenerator targetPackage="com.example.entity" targetProject="src/main/java">
+            <!-- 默认false 是否允许子包 -->
+            <property name="enableSubPackages" value="true" />
+            <!-- 默认false 是否对model添加 构造函数 -->
+            <property name="constructorBased" value="false"/>
+            <!-- 默认false 建立的Model对象是否 不可改变  即生成的Model对象不会有 setter方法 -->
+            <property name="immutable" value="false"/>
+            <!-- 默认false 是否对类CHAR类型的列的数据进行trim操作 -->
+            <property name="trimStrings" value="true" />
+        </javaModelGenerator>
+
+        <!-- 生成映射文件的包名和位置 -->
+        <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+
+        <!-- 生成dao的包名和位置-->
+        <javaClientGenerator targetPackage="com.example.mapper" targetProject="src/main/java" type="XMLMAPPER">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+
+        <!--
+        <table tableName="test" domainObjectName="test">
+            &lt;!&ndash; 若数据库中某个属性类型为text或类似类型，可能会发生无法生成这个属性，此时可以在这里指定转换类型为VARCHAR&ndash;&gt;
+            <columnOverride column="teacher_name" jdbcType="VARCHAR" />
+        </table>
+        -->
+        <table tableName="t_generator" domainObjectName="TGenerator"/>
+    </context>
+</generatorConfiguration>

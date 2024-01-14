@@ -1,0 +1,18 @@
+
+spring:
+  application:
+    name: doubledatasource
+  mysql:
+    datasource:
+      url: jdbc:mysql://127.0.0.1:3306/user?useUnicode=true&characterEncoding=utf8&useSSL=false&allowMultiQueries=true
+      username: root
+      password: root
+      driver-class-name: com.mysql.jdbc.Driver
+      type: com.alibaba.druid.pool.DruidDataSource
+  sqlserver:
+    datasource:
+      url: jdbc:mysql://192.168.xx.xx:3306/test?useUnicode=true&characterEncoding=utf8&useSSL=false&allowMultiQueries=true
+      username: root
+      password: 12345
+      driver-class-name: com.mysql.jdbc.Driver
+      type: com.alibaba.druid.pool.DruidDataSource

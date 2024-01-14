@@ -1,0 +1,114 @@
+parameterType属性的作用： 告诉MyBatis框架这个方法的参数类型是什么类型
+MyBatis框架自身带有类型自动推断机制，所以大部分情况下parameterType属性都是可以省略不写的
+
+1.查询结果的列名和java对象的属性名对应不上的做法？
+    第一种方式：as 给列起别名 as可以省略不写，我们前面的做法就是如此
+    第二种方式：使用resultMap进行结果映射
+    第三种方式：是否开启驼峰命名自动映射(设置settings)
+        Java命名规范：首字母小写，后面每个单词首字母大写，遵循驼峰命名方式。
+        SQL命名规范：全部小写，单词之间采用下划线分割。
+        mybatis:
+            configuration:
+                map-underscore-to-camel-case: true
+
+2.多表查询
+2.1多对一，常见的包括三种：
+    第一种方式：一条SQL语句，级联属性映射
+    第二种方式：一条SQL语句，association
+    第三种方式（常用）：两条SQL语句，分步查询。 优点：可复用、支持懒加载
+2.2一对多
+    第一种方式：collection
+    第二种方式：分步查询
+
+3.#{}是防止Sql注入风险的 是以值的方式放到Sql语句当中，
+    如果需要的Sql语句的关键字(固定值)放到Sql语句当中只能使用${}
+    <!--brand like '%${brand}%'-->
+    <!--brand like concat('%',#{brand},'%')-->
+
+4.MyBatis参数处理
+4.1简单类型包括
+    七种数据类型（除了boolean）以及他们的包装类
+    String
+    java.util.Date
+    java.sql.Date
+4.2Map参数
+    入参
+    返回值
+    返回List<Map>
+    返回List<String,Map>
+4.3实体类参数
+4.4多参数（@Param）
+4.5resultMap结果映射
+
+注意：sql中获取参数时，有三种方式
+    1.使用入参中的字符串，如果字符串与entity字段名一致
+    2.使用@Param注解时，可以使用注解里面的别名
+    3.使用参数下标，如获取第一个参数：#{0}
+
+
+5.动态sql
+if
+choose when otherwise
+where set
+foreach
+
+
+6.缓存机制
+MyBatis缓存包括：
+    一级缓存：将查询到的数据存储到SqlSession中。
+    二级缓存：将查询到的数据存储到SqlSessionFactory中。
+    其他集成第三方的缓存：比如EhCache【Java语言开发的】、Memcache【c语言开发的】等。
+
+
+7.分页查询
+limit后面两个数字： limit m,n (从m条数据开始，获取n条数据，左闭右开)
+第一个数字：startIndex(起始下标，下标从0开始)
+第二个数字：pageSize(每页显示的记录条数)
+
+假设已知页码pageNum，还有每页显示的记录条数pageSize，第一个数字如何动态获取？
+startIndex = (pageNum - 1) * pageSize
+
+两个方式：
+    1.使用源生sql中的limit
+    2.使用分页插件，如 PageHelper
+        依赖：pagehelper-spring-boot-starter
+        #配置分页插件pagehelper
+        pagehelper:
+          #heleperDialect表示配置PageHelper的方言，一般取值为mysql、oracle
+          helperDialect: mysql
+          #reasonable表示分页合理化参数，其取值默认为false，会直接根据分页参数（PageNum、PageSize）进行查询。当该参数设置为true时，pageNum小于等于0时会查询第一页，pageNum>pages（超过总数时），会查询最后一页
+          reasonable: true
+          #supportMethodsArguments表示PageHelper是否支持根据mapper方法的入参对象（queryModel）的pageNum、pageSize 来分析是否进行自动分页，默认为false（推荐配置），为true的情况下一不留神会给自己带来坑，除非我们的入参对象（queryModel）中不含这两个字段
+          supportMethodsArguments: false
+          #为了支持PageHelper的startPage(Object params)方法，增加了该参数来配置参数映射，用于从对象中根据属性名取值， 可以配置 pageNum,pageSize,count,pageSizeZero,reasonable，不配置映射的用默认值， 默认值为pageNum=pageNum;pageSize=pageSize;count=countSql;reasonable=reasonable;pageSizeZero=pageSizeZero。
+          params: count=countSql
+
+8.sqlSession,sqlSessionTemplate
+SqlSessionTemplate简介
+    通俗地讲，SqlSessionTemplate是Mybatis—Spring的核心，是用来代替默认Mybatis实现的DefaultSqlSessionFactory，
+    也可以说是DefaultSqlSessionFactory的优化版，主要负责管理Mybatis的SqlSession，调用Mybatis的sql方法，
+    SqlSessionTemplate是线程安全的，通过TransactionSynchronizationManager中的ThreadLocal保存线程对应的SqlSession,
+    可以被多个Dao共享使用。
+
+依赖：mybatis-spring-boot-starter 中有
+
+9.二级缓存
+9.1 原始SSM XML方式
+    1、全局配置文件mybatis-config.xml中开启二级缓存
+        <setting name="cacheEnabled" value="true"/>
+    2、需要使用二级缓存的映射文件****Mapper.xml处使用cache配置缓存
+        <cache />
+    3、注意：POJO需要实现Serializable接口
+
+9.2 SpringBoot集成MyBatis注解方式
+    1、yml中开启二级缓存
+        mybatis:
+          configuration:
+            cache-enabled: true
+    2、Mapper层接口使用@CacheNamespace注解
+        @CacheNamespace(blocking = true)
+        public interface SysConfigMapper {
+            @Select("select * from sys_config")
+            List<Map> selectList();
+        }
+

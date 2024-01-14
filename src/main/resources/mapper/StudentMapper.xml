@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+<mapper namespace="com.example.mapper.StudentMapper">
+    <!--记住：前者是属性名，后者是字段名 前面了解过 这里再复习一下-->
+    <!--多对一映射的第一种方式：一条SQL语句，级联属性映射-->
+    <resultMap id="studentResultMap" type="Student">
+        <id property="sid" column="sid" />
+        <result property="sname" column="sname" />
+        <result property="classroom.cid" column="cid" />
+        <result property="classroom.cname" column="cname" />
+    </resultMap>
+    <select id="selectById" resultMap="studentResultMap">
+        select
+            s.sid,s.sname,c.cid,c.cname
+        from
+            t_stu s
+                left join
+            t_class c
+            on
+                s.cid = c.cid
+        where
+            s.sid = #{sid}
+    </select>
+
+    <!--======================================================================-->
+
+    <!--
+        association翻译为关联，一个Student对象关联一个Class对象
+            property：提供要映射的POJO的参数名
+            javaType：用来指定要映射的java类型
+    -->
+    <resultMap id="studentResultMapAssociation" type="Student">
+        <id property="sid" column="sid" />
+        <result property="sname" column="sname" />
+        <association property="classroom" javaType="Classroom">
+            <id property="cid" column="cid" />
+            <result property="cname" column="cname" />
+        </association>
+    </resultMap>
+    <select id="selectByIdAssociation" resultMap="studentResultMapAssociation">
+        select
+            s.sid,s.sname,c.cid,c.cname
+        from
+            t_stu s
+                left join
+            t_class c
+            on
+                s.cid = c.cid
+        where
+            s.sid = #{sid}
+    </select>
+
+    <!--======================================================================-->
+
+    <!--
+		分步查询的有点：
+			第一：复用性增强。可以重复利用（大步分成小步，每一小步更加可以重新利用）
+			第二：可以充分利用他们的延迟加载/懒加载机制
+	-->
+    <!--两条SQL语句，完成多对一的多步查询-->
+    <!--这里是第一步：根据学生的id查询学生的所有信息，这些信息当中含有班级id(cid)-->
+    <resultMap id="studentResultMapByStep" type="Student">
+        <id property="sid" column="sid" />
+        <result property="sname" column="sname" />
+        <association property="classroom"
+                     select="com.example.mapper.ClassroomMapper.selectByIdStep2"
+                     column="cid"/>
+        <!--
+            延迟加载的核心机制：用的时候再执行查询语句，不用的时候不查询，可以提高性能。
+            默认情况下是没有开启延迟加载的，需要手动设置开启。
+            开启延迟加载的方法：association标签中添加fetchType="lazy"
+            但是这里只是开启默认的延迟加载，仅局限于此Mapper映射文件，需要在核心配置文件里设置
+
+            如果开启了全局延迟加载，但又不想在某个映射文件中开启，那么就需要在association标签设置
+                        fetchType="eager"
+        -->
+        <!--<association property="classroom"
+                     select="com.example.mapper.ClassroomMapper.selectByIdStep2"
+                     column="cid"
+                     fetchType="lazy"/>-->
+    </resultMap>
+
+    <select id="selectByIdStep1" resultMap="studentResultMapByStep">
+        select
+            sid,sname,cid
+        from
+            t_stu
+        where
+            sid = #{sid}
+    </select>
+
+    <!--======================================================================-->
+
+    <!--一对多，分步查询第二步：根据传过来的班级编号查询学生信息-->
+    <select id="selectByStep2" resultType="Student">
+        select
+            sid,sname
+        from
+            t_stu
+        where
+            cid = #{cid}
+    </select>
+
+    <!--======================================================================-->
+
+</mapper>
