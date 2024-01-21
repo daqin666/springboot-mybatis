@@ -1,0 +1,71 @@
+第一种方案，用 for语句循环插入（不推荐）
+优势：JDBC 中的 PreparedStatement 有预编译功能，预编译之后会缓存起来。
+之后SQL执行会比较快，且 JDBC可以开启批处理，这个批处理执行非常给力。
+劣势：这种方式插入大量数据时，效率非常底下，不推荐。很多时候我们的 SQL 服务器和应用服务器可能并不是同一台，所以必须要考虑网络 IO。
+如果网络 IO 比较费时间的话，那么可能会拖慢 SQL 执行的速度。
+
+=============================================================
+
+第二种方案，利用mybatis的foreach来实现循环插入（不推荐）
+/**
+* 第二种方案，利用mybatis的foreach来实现循环插入 10万 条数据
+*/
+@GetMapping("/test2")
+public String test2(int count) {
+    StopWatch stopWatch = new StopWatch();
+    stopWatch.start();
+    List<User> list = new ArrayList<>();
+    for (int i = 0; i < count; i++) {
+        User user = new User();
+        user.setName("方案2测试" + i);
+        user.setGender("男");
+        user.setUsername("方案2测试");
+        user.setPassword("方案2测试");
+        user.setRemark("方案2测试");
+        list.add(user);
+    }
+    userService.saveList(list);
+    stopWatch.stop();
+    System.out.println("第二种方案，利用mybatis的foreach来实现循环插入耗时：" + stopWatch.getTotalTimeMillis());
+    return "操作完成";
+}
+
+<insert id="saveList" parameterType="list">
+    insert into t_user values
+    <foreach collection="list" item="item" separator=",">
+        (#{item.name}, #{item.gender}, #{item.username}, #{item.password}, #{item.remark})
+    </foreach>
+</insert>
+
+
+优势：不用频繁访问数据库，一条sql搞定，效率比较高。
+劣势：一当数据量太大时，会出现拼接的sql语句超长而执行失败，所以当数据量太大时，也不推荐。
+二是 SQL 太长了，甚至可能需要分片后批量处理。
+三是无法充分发挥 PreparedStatement 预编译的优势，SQL 要重新解析且无法复用
+
+com.mysql.cj.jdbc.exceptions.PacketTooBigException: Packet for query is too large (4,879,714 > 4,194,304).
+    You can change this value on the server by setting the 'max_allowed_packet' variable.
+
+=============================================================
+
+第三种方案，使用sqlSessionFactory实现批量插入（推荐）
+
+@Resource
+private SqlSessionFactory sqlSessionFactory;
+
+// 关闭session的自动提交
+SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH, false);
+try {
+    UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+    list.stream().forEach(user -> userMapper.saveInfo(user));
+    // 提交数据
+    sqlSession.commit();
+    sqlSession.rollback();
+} catch (Exception e) {
+    sqlSession.rollback();
+} finally {
+    sqlSession.close();
+}
+
+优势：这种方式可以说是集第一种和第二种方式的优点于一身，既可以提高运行效率，又可以保证大数据量时执行成功，
+大数据量时推荐使用这种方式。
