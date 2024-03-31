@@ -1,0 +1,18 @@
+================================================
+==bind标签
+bind 标签可以使用 OGNL 表达式创建一个变量井将其绑定到上下文中
+<bind name = "需要绑定的变量"    value = "绑定的最终值" />
+
+name：为上下文的变量，如SQL中存在#{userName}变量，这里name就填写userName
+value：绑定变量的最终值，如name="userName"，那么value就是#{userName}的最终实际值，可以对传递的参数进行处理，
+如：value = " '%' + userName + '%' "，给传入的userName拼接前后%符号。
+
+作用
+1>兼容不同数据库之间的SQL语法差异，对数据库迁移友好
+2>防止SQL注入
+
+================================================
+==返回自增id
+com.example.mapper.IdIncreaseMapperTest.testInsert4
+
+================================================

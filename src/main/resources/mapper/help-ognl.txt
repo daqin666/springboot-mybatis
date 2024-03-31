@@ -1,0 +1,67 @@
+对象导航图语言（Object Graph Navigation Language），简称OGNL，
+是应用于Java中的一个开源的表达式语言（Expression Language）
+
+==OGNL 常用表达式
+e1 or e2
+e1 and e2
+e1 == e2, e1 eq e2
+e1 != e2, e1 neq e2
+e1 < e2, e1 lt e2
+e1 <= e2, e1 lte e2
+e1 > e2, e1 gt e2
+e1 >= e2, e1 gte e2
+e1 in e2
+e1 not in e2
+! e, not e,e instanceof class
+e.method(args)调用对象方法
+e.property调用对象属性
+e1[ e2 ] 按索引取值，list,数组和map
+@class@method(args) 调用静态方法
+@class@field 调用静态常量
+
+
+
+==MyBatis中可以使用OGNL的地方有两处：
+动态SQL表达式中
+${param}参数中
+上面这两处地方在MyBatis中处理的时候都是使用OGNL处理的。
+
+eg:
+<if test="field!= null and field!=''">
+  and some_col = #{field}
+</if>
+当field不为null并且不为空字符的情况下增加一个查询条件。其中 test就是一个OGNL表达式。Mybatis中的OGNL表达式主要有两种用途。
+
+--
+
+<bind name="nameLike" value="'%'+ name + '%'"/>
+这里的value也属于OGNL表达式 e1+e2，字符串是拼接，数字的话就是加法运算，我们可以引申出肯定还有：
+e1*e2 乘法
+e1/e2 除法
+e1-e2 减法
+e1%e2 取模
+
+--
+
+其实Mybatis的Mapper.xml中还可以使用对象的内置方法，比如我们需要判断一个java.util.Collection集合是否为空
+<if test="collection!=null and collection.size()> 0">
+  and some_col = #{some_val}
+</if>
+这里就使用了对象的内置方法Collection.size()
+
+--
+
+我们还可以调用自定义对象CollectionUtils的静态方法来判断集合是否为空：
+public final class CollectionUtils {
+	public static boolean isNotEmpty(Collection<?> collection) {
+		return (collection != null && !collection.isEmpty());
+	}
+}
+那么上面的判断改为:
+<if test="@cn.felord.util.CollectionUtils@isNotEmpty(collection)">
+  and some_col = #{some_val}
+</if>
+不要忘了这里要带上类的全限定名。
+
+--
+

@@ -24,6 +24,7 @@ MyBatis框架自身带有类型自动推断机制，所以大部分情况下para
     如果需要的Sql语句的关键字(固定值)放到Sql语句当中只能使用${}
     <!--brand like '%${brand}%'-->
     <!--brand like concat('%',#{brand},'%')-->
+    <!--brand like '%' || #{brand} || '%'--> -- 有的方言不支持||，比如mysql
 
 4.MyBatis参数处理
 4.1简单类型包括
@@ -48,8 +49,10 @@ MyBatis框架自身带有类型自动推断机制，所以大部分情况下para
 
 5.动态sql
 if
+trim
 choose when otherwise
-where set
+where
+set
 foreach
 
 
@@ -82,6 +85,16 @@ startIndex = (pageNum - 1) * pageSize
           supportMethodsArguments: false
           #为了支持PageHelper的startPage(Object params)方法，增加了该参数来配置参数映射，用于从对象中根据属性名取值， 可以配置 pageNum,pageSize,count,pageSizeZero,reasonable，不配置映射的用默认值， 默认值为pageNum=pageNum;pageSize=pageSize;count=countSql;reasonable=reasonable;pageSizeZero=pageSizeZero。
           params: count=countSql
+    3.代码： src/test/java/com/example/mapper/CarMapperTest.java
+    4.原理：
+        原理：在MyBatis中配置了分页拦截器（PageInterceptor），就是在执行相关的Sql之前会做一些拦截的操作，
+        这里通过调用startPage的方法，其实就是在查询getOrderInfoList之前会自动加上limit；这里通过setLocalPage方法，
+        将分页信息保存在当前之后线程当中，查询方法与之处于同一个线程，共享ThreadLocal当中的数据，
+        最后将getOrderInfoList查询好的数据结果放到PageInfo当中即可。
+    5.什么时候会导致线程不安全的分页？
+        Pagehelper调用了startPage方法，产生了分页参数，但是没有被消费，这个参数会一直保存在线程中，下次执行时可能会
+        出现问题，比如不分页的分页了，分页不对等
+
 
 8.sqlSession,sqlSessionTemplate
 SqlSessionTemplate简介

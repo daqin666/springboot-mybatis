@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.Tree2EntityMapper">
+  <resultMap id="BaseResultMap" type="com.example.entity.Tree2Entity">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="lv1_id" jdbcType="VARCHAR" property="lv1Id" />
+    <result column="lv1_name" jdbcType="VARCHAR" property="lv1Name" />
+    <result column="lv2_id" jdbcType="VARCHAR" property="lv2Id" />
+    <result column="lv2_name" jdbcType="VARCHAR" property="lv2Name" />
+    <result column="lv3_id" jdbcType="VARCHAR" property="lv3Id" />
+    <result column="lv3_name" jdbcType="VARCHAR" property="lv3Name" />
+  </resultMap>
+
+  <resultMap id="TreeMap" type="com.example.entity.Tree2Dto">
+    <result column="lv1_id" jdbcType="VARCHAR" property="lvId" />
+    <result column="lv1_name" jdbcType="VARCHAR" property="lvName" />
+    <collection property="childrenList" ofType="com.example.entity.Tree2Dto">
+      <result column="lv2_id" jdbcType="VARCHAR" property="lvId" />
+      <result column="lv2_name" jdbcType="VARCHAR" property="lvName" />
+      <collection property="childrenList" ofType="com.example.entity.Tree2Dto">
+        <result column="lv3_id" jdbcType="VARCHAR" property="lvId" />
+        <result column="lv3_name" jdbcType="VARCHAR" property="lvName" />
+      </collection>
+    </collection>
+  </resultMap>
+
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, lv1_id, lv1_name, lv2_id, lv2_name, lv3_id, lv3_name
+    from t_tree_2
+  </select>
+
+  <select id="selectTree" resultMap="TreeMap">
+    select lv1_id, lv1_name, lv2_id, lv2_name, lv3_id, lv3_name
+    from t_tree_2
+  </select>
+
+</mapper>

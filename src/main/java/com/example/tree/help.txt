@@ -1,0 +1,24 @@
+按表设计方式区分两种
+
+方式一： 表设计方式 id, parent_id
+实现方式两种：
+    1、xml文件使用collection标签递归查询，直接返回树形结构
+    2、xml查询出所有结果，然后通过代码递归构造树形结构
+        可以通过自己编写逻辑代码
+        也可以通过 hutool-all 包的工具类
+测试代码： com.example.mapper.TreeEntityMapperTest
+
+方式二： 表设计方式，冗余设计，lv1_id, lv2_id, lv3_id...
+实现方式：
+    1、xml文件使用collection标签嵌套即可
+    注意，这种方式是以父对象中所有属性总和的唯一性来做“一对多”中一的合并，如果属性存在不一致，则不会合并
+    如下 test1-1
+    不过一般没什么问题，不可能lv1_id一样，但是lv1_name不一致的情况
+
+1	1	test1	11	test11	111	test111
+4	1	test1	11	test11	112	test112
+5	1	test1	11	test11	113	test113
+6	1	test1	22	test22	221	test221
+7	1	test1	22	test22	222	test222
+8	1	test1-1	33	test33
+9	2	test2

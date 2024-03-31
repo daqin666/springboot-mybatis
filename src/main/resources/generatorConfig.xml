@@ -55,6 +55,8 @@
             <columnOverride column="teacher_name" jdbcType="VARCHAR" />
         </table>
         -->
-        <table tableName="t_generator" domainObjectName="TGenerator"/>
+<!--        <table tableName="t_generator" domainObjectName="TGenerator"/>-->
+        <table tableName="t_tree" domainObjectName="TreeEntity"/>
+        <table tableName="t_tree_2" domainObjectName="Tree2Entity"/>
     </context>
 </generatorConfiguration>

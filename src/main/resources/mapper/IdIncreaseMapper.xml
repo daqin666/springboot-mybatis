@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.IdIncreaseMapper">
+
+  <insert id="insert" parameterType="com.example.entity.IdIncrease">
+    insert into t_id_incre (name, age)
+    value (#{name,jdbcType=VARCHAR}, #{age,jdbcType=INTEGER})
+  </insert>
+
+  <insert id="insert2" parameterType="com.example.entity.IdIncrease">
+    insert into t_id_incre (name, age)
+      values (#{name,jdbcType=VARCHAR}, #{age,jdbcType=INTEGER})
+  </insert>
+
+  <insert id="insert3" parameterType="list">
+    insert into t_id_incre (name, age)
+      values
+      <foreach collection="list" item="item" separator=",">
+        (#{item.name,jdbcType=VARCHAR}, #{item.age,jdbcType=INTEGER})
+      </foreach>
+  </insert>
+
+  <insert id="insert4" parameterType="com.example.entity.IdIncrease"
+          useGeneratedKeys="true" keyProperty="idd">
+    insert into t_id_incre (name, age, time)
+      value (#{name,jdbcType=VARCHAR}, #{age,jdbcType=INTEGER}, now())
+  </insert>
+
+  <insert id="insert5" parameterType="com.example.entity.IdIncrease"
+          useGeneratedKeys="true" keyProperty="idd">
+    insert into t_id_incre (name, age)
+      value (#{name,jdbcType=VARCHAR}, #{age,jdbcType=INTEGER})
+  </insert>
+
+</mapper>

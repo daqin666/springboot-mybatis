@@ -1,0 +1,61 @@
+[
+  {
+    "lvId": "1",
+    "lvName": "test1",
+    "childrenList": [
+      {
+        "lvId": "11",
+        "lvName": "test11",
+        "childrenList": [
+          {
+            "lvId": "111",
+            "lvName": "test111",
+            "childrenList": null
+          },
+          {
+            "lvId": "112",
+            "lvName": "test112",
+            "childrenList": null
+          },
+          {
+            "lvId": "113",
+            "lvName": "test113",
+            "childrenList": null
+          }
+        ]
+      },
+      {
+        "lvId": "22",
+        "lvName": "test22",
+        "childrenList": [
+          {
+            "lvId": "221",
+            "lvName": "test221",
+            "childrenList": null
+          },
+          {
+            "lvId": "222",
+            "lvName": "test222",
+            "childrenList": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "lvId": "1",
+    "lvName": "test1-1",
+    "childrenList": [
+      {
+        "lvId": "33",
+        "lvName": "test33",
+        "childrenList": []
+      }
+    ]
+  },
+  {
+    "lvId": "2",
+    "lvName": "test2",
+    "childrenList": []
+  }
+]

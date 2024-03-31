@@ -1,0 +1,32 @@
+==拼接字符串
+SELECT concat('Hello', ' ', 'World');
+
+SELECT 'Hello' || ' ' || 'World'; -- mysql不支持
+
+使用concat_ws()函数可以合并多个字符串，并通过指定分隔符来分隔这些字符串
+SELECT CONCAT_WS(', ', 'apple', 'banana', 'orange');
+
+SELECT format('%s %s world', 'hello', 'cruel');
+
+================================================
+
+==拼接列数据
+--postgresql：
+SELECT string_agg(column_name::text, ', ') AS concatenated_data FROM table_name;
+
+--mysql：
+SELECT GROUP_CONCAT(names SEPARATOR ',') AS concatenated_names FROM table_name;
+
+================================================
+
+==类型转换
+--postgresql：
+“::” 符号其实是一个强制类型转换符，作用等同于CAST。
+select '100'::integer,'100'::varchar;
+select CAST('100' as integer),CAST('100' as varchar);
+
+--ysql：
+SELECT CAST(column_name AS CHAR) AS new_column_name FROM table_name;
+SELECT CONVERT(column_name, CHAR) AS new_column_name FROM table_name;
+
+================================================

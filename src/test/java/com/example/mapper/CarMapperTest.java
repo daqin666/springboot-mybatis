@@ -66,6 +66,22 @@ public class CarMapperTest extends TestCase {
         System.out.println(cars);
     }
 
+
+    /**
+     * PageInfo返回数据：
+     * pageNum：当前页的页码
+     * pageSize：每页显示的条数
+     * size：当前页显示的真实条数
+     * total：总记录数
+     * pages：总页数
+     * prePage：上一页的页码
+     * nextPage：下一页的页码
+     * isFirstPage/isLastPage：是否为第一页/最后一页
+     * hasPreviousPage/hasNextPage：是否存在上一页/下一页
+     * navigatePages：导航分页的页码数
+     * navigatepageNums：导航分页的页码，[1,2,3,4,5]
+     */
+
     @Test
     public void testSelectByPage(){
         int pageNum = 1;
