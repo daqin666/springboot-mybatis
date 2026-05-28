@@ -80,6 +80,11 @@ public class TreeEntityMapperTest extends TestCase {
         }
     }
 
+    /**
+     * hutool-all 包的工具类方式
+     *
+     * @throws JsonProcessingException --
+     */
     @Test
     public void testSelectTree3() throws JsonProcessingException {
         List<TreeEntity> treeEntities = mapper.selectAll();
